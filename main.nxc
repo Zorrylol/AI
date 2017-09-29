@@ -1,0 +1,94 @@
+/*
+[insert Yo' mama joke]
+*/
+
+#define SpeedSlow 25
+#define SpeedFast 50
+#define WAIT_TIME 1000
+
+int med;
+int fast;
+int temp;
+string msg;
+int SV;
+int LoopCount;
+
+
+/*
+Robot follows straight line
+@param loopTime - why???
+*/
+sub followLine(int loopTime){
+  int Threshold1=500;
+  int Threshold2=530;
+  long t;
+
+  // set sensor type and mode
+  SetSensorType(IN_3, IN_TYPE_LIGHT_ACTIVE);
+  SetSensorMode(IN_3, IN_MODE_RAW);
+
+  // start looping
+  t = CurrentTick() + loopTime;
+  while (t > CurrentTick())
+  {
+    // read the light sensor value
+    SV = SensorRaw(IN_3);
+
+    // set speed for motor 1
+    if (SV < Threshold2)
+      OnFwd(OUT_A, SpeedFast);
+    else
+      OnFwd(OUT_A, SpeedSlow);
+
+    // set speed for motor 2
+    if (SV > Threshold1)
+      OnFwd(OUT_C, SpeedFast);
+    else
+      OnFwd(OUT_C, SpeedSlow);
+
+    // display sensor value
+//    NumOut(0, LCD_LINE1, false, SV);
+
+    LoopCount++;
+  }
+  // loopTIme ms loop is done
+  return;
+}
+
+sub checkLightSensor(){
+  SetSensorType(IN_3, IN_TYPE_LIGHT_ACTIVE);
+  SetSensorMode(IN_3, IN_MODE_RAW);
+  repeat(30){
+    int temp = SensorRaw(IN_3);
+    string msg = NumToStr(temp);
+    TextOut(0, LCD_LINE1, msg);
+    Wait(500);
+  }
+  return;
+}
+
+/*
+Main method
+*/
+task main(){
+  string msg;
+  
+  //checkLightSensor();
+  followLine(10000);
+
+  // output results
+  msg = "whatever";
+  TextOut(0, LCD_LINE1, msg);
+
+
+
+
+
+
+
+
+  // stop both motors
+  Off(OUT_AC);
+  // let user see the last message
+  Wait(3000);
+}
